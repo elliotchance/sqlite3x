@@ -49,3 +49,5 @@
 /test-out.txt
 /testfixture
 /sqlite3x
+/.fslckout
+/sqlite3x.c

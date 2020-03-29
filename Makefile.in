@@ -757,6 +757,9 @@ sqlite3.c:	.target_source $(TOP)/tool/mksqlite3c.tcl
 	cp tsrc/sqlite3ext.h .
 	cp $(TOP)/ext/session/sqlite3session.h .
 
+sqlite3x.c: sqlite3.c
+	cp sqlite3.c sqlite3x.c
+
 sqlite3ext.h:	.target_source
 	cp tsrc/sqlite3ext.h .
 
@@ -1061,6 +1064,9 @@ parse.c:	$(TOP)/src/parse.y lemon$(BEXE)
 
 sqlite3.h:	$(TOP)/src/sqlite.h.in $(TOP)/manifest mksourceid$(BEXE) $(TOP)/VERSION
 	$(TCLSH_CMD) $(TOP)/tool/mksqlite3h.tcl $(TOP) >sqlite3.h
+
+sqlite3x.h: sqlite3.h
+	cp sqlite3.h sqlite3x.h
 
 keywordhash.h:	$(TOP)/tool/mkkeywordhash.c
 	$(BCC) -o mkkeywordhash$(BEXE) $(OPT_FEATURE_FLAGS) $(OPTS) $(TOP)/tool/mkkeywordhash.c
