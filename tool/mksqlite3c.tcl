@@ -354,6 +354,7 @@ foreach file {
    callback.c
    delete.c
    func.c
+   math.c
    fkey.c
    insert.c
    legacy.c

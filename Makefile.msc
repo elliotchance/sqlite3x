@@ -1305,6 +1305,7 @@ SRC00 = \
   $(TOP)\src\loadext.c \
   $(TOP)\src\main.c \
   $(TOP)\src\malloc.c \
+  $(TOP)\src\math.c \
   $(TOP)\src\mem0.c \
   $(TOP)\src\mem1.c \
   $(TOP)\src\mem2.c \
@@ -1979,6 +1980,9 @@ main.lo:	$(TOP)\src\main.c $(HDR)
 
 malloc.lo:	$(TOP)\src\malloc.c $(HDR)
 	$(LTCOMPILE) $(CORE_COMPILE_OPTS) -c $(TOP)\src\malloc.c
+
+math.lo:	$(TOP)\src\math.c $(HDR)
+	$(LTCOMPILE) $(CORE_COMPILE_OPTS) -c $(TOP)\src\math.c
 
 mem0.lo:	$(TOP)\src\mem0.c $(HDR)
 	$(LTCOMPILE) $(CORE_COMPILE_OPTS) -c $(TOP)\src\mem0.c
