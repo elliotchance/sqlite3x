@@ -1,0 +1,725 @@
+set testdir [file dirname $argv0]
+source $testdir/tester.tcl
+
+# Some of the results have been rounded to less precision because different
+# systems can produce very slightly different results. For example sin(2.5) has
+# been shown to produce the error:
+#
+# ! sin-float expected: [0.598472144103956]
+# ! sin-float got:      [0.598472144103957]
+
+# cos()
+
+do_execsql_test cos-float {
+  SELECT round(cos(2.5), 6);
+} {-0.801144}
+
+do_execsql_test cos-int {
+  SELECT round(cos(2), 6);
+} {-0.416147}
+
+do_execsql_test cos-string {
+  SELECT round(cos('2.75'), 6);
+} {-0.924302}
+
+do_execsql_test cos-zero {
+  SELECT cos(0);
+} {1.0}
+
+do_execsql_test cos-badarg-1 {
+  SELECT cos('foo');
+} {1.0}
+
+do_execsql_test cos-null {
+  SELECT cos(NULL);
+} {{}}
+
+do_test cos-args-0 {
+  catchsql {
+    SELECT cos();
+  }
+} {1 {wrong number of arguments to function cos()}}
+
+do_test cos-args-2 {
+  catchsql {
+    SELECT cos(1, 2);
+  }
+} {1 {wrong number of arguments to function cos()}}
+
+# sin()
+
+do_execsql_test sin-float {
+  SELECT round(sin(2.5), 6);
+} {0.598472}
+
+do_execsql_test sin-int {
+  SELECT round(sin(2), 6);
+} {0.909297}
+
+do_execsql_test sin-string {
+  SELECT round(sin('2.75'), 6);
+} {0.381661}
+
+do_execsql_test sin-zero {
+  SELECT sin(0);
+} {0.0}
+
+do_execsql_test sin-badarg-1 {
+  SELECT sin('foo');
+} {0.0}
+
+do_execsql_test sin-null {
+  SELECT sin(NULL);
+} {{}}
+
+do_test sin-args-0 {
+  catchsql {
+    SELECT sin();
+  }
+} {1 {wrong number of arguments to function sin()}}
+
+do_test sin-args-2 {
+  catchsql {
+    SELECT sin(1, 2);
+  }
+} {1 {wrong number of arguments to function sin()}}
+
+# tan()
+
+do_execsql_test tan-float {
+  SELECT round(tan(2.5), 6);
+} {-0.747022}
+
+do_execsql_test tan-int {
+  SELECT round(tan(2), 6);
+} {-2.18504}
+
+do_execsql_test tan-string {
+  SELECT round(tan('2.75'), 6);
+} {-0.412918}
+
+do_execsql_test tan-zero {
+  SELECT tan(0);
+} {0.0}
+
+do_execsql_test tan-badarg-1 {
+  SELECT tan('foo');
+} {0.0}
+
+do_execsql_test tan-null {
+  SELECT tan(NULL);
+} {{}}
+
+do_test tan-args-0 {
+  catchsql {
+    SELECT tan();
+  }
+} {1 {wrong number of arguments to function tan()}}
+
+do_test tan-args-2 {
+  catchsql {
+    SELECT tan(1, 2);
+  }
+} {1 {wrong number of arguments to function tan()}}
+
+# pow()
+
+do_execsql_test pow-float-float {
+  SELECT round(pow(2.5, 3.7), 6);
+} {29.674133}
+
+do_execsql_test pow-int-int {
+  SELECT pow(2, 3);
+} {8.0}
+
+do_execsql_test pow-float-int {
+  SELECT pow(2.5, 3);
+} {15.625}
+
+do_execsql_test pow-int-float {
+  SELECT round(pow(2, 3.7), 6);
+} {12.996038}
+
+do_execsql_test pow-badarg-1 {
+  SELECT pow('foo', 2.5);
+} {0.0}
+
+do_execsql_test pow-badarg-2 {
+  SELECT pow(2.5, 'foo');
+} {1.0}
+
+do_execsql_test pow-string-string {
+  SELECT pow('2.5', '-2');
+} {0.16}
+
+do_execsql_test pow-null-both {
+  SELECT pow(NULL, NULL);
+} {{}}
+
+do_execsql_test pow-null-x {
+  SELECT pow(NULL, 3);
+} {{}}
+
+do_execsql_test pow-null-y {
+  SELECT pow(2, NULL);
+} {{}}
+
+do_test pow-args-0 {
+  catchsql {
+    SELECT pow();
+  }
+} {1 {wrong number of arguments to function pow()}}
+
+do_test pow-args-1 {
+  catchsql {
+    SELECT pow(1);
+  }
+} {1 {wrong number of arguments to function pow()}}
+
+do_test pow-args-3 {
+  catchsql {
+    SELECT pow(1, 2, 3);
+  }
+} {1 {wrong number of arguments to function pow()}}
+
+# pi()
+
+do_execsql_test pi {
+  SELECT round(pi(), 6);
+} {3.141593}
+
+do_test pi-args-1 {
+  catchsql {
+    SELECT pi(1);
+  }
+} {1 {wrong number of arguments to function pi()}}
+
+# e()
+
+do_execsql_test e {
+  SELECT round(e(), 6);
+} {2.718282}
+
+do_test e-args-1 {
+  catchsql {
+    SELECT e(1);
+  }
+} {1 {wrong number of arguments to function e()}}
+
+# acos()
+
+do_execsql_test acos-float {
+  SELECT round(acos(0.5), 6);
+} {1.047198}
+
+do_execsql_test acos-int {
+  SELECT round(acos(0.6), 6);
+} {0.927295}
+
+do_execsql_test acos-string {
+  SELECT round(acos('0.75'), 6);
+} {0.722734}
+
+do_execsql_test acos-zero {
+  SELECT round(acos(0), 6);
+} {1.570796}
+
+do_execsql_test acos-badarg-1 {
+  SELECT round(acos('foo'), 6);
+} {1.570796}
+
+do_execsql_test acos-null {
+  SELECT acos(NULL);
+} {{}}
+
+do_test acos-args-0 {
+  catchsql {
+    SELECT acos();
+  }
+} {1 {wrong number of arguments to function acos()}}
+
+do_test acos-args-2 {
+  catchsql {
+    SELECT acos(1, 2);
+  }
+} {1 {wrong number of arguments to function acos()}}
+
+# asin()
+
+do_execsql_test asin-float {
+  SELECT round(asin(0.5), 6);
+} {0.523599}
+
+do_execsql_test asin-int {
+  SELECT round(asin(0.6), 6);
+} {0.643501}
+
+do_execsql_test asin-string {
+  SELECT round(asin('0.75'), 6);
+} {0.848062}
+
+do_execsql_test asin-zero {
+  SELECT asin(0);
+} {0.0}
+
+do_execsql_test asin-badarg-1 {
+  SELECT asin('foo');
+} {0.0}
+
+do_execsql_test asin-null {
+  SELECT asin(NULL);
+} {{}}
+
+do_test asin-args-0 {
+  catchsql {
+    SELECT asin();
+  }
+} {1 {wrong number of arguments to function asin()}}
+
+do_test asin-args-2 {
+  catchsql {
+    SELECT asin(1, 2);
+  }
+} {1 {wrong number of arguments to function asin()}}
+
+# atan()
+
+do_execsql_test atan-float {
+  SELECT round(atan(0.5), 6);
+} {0.463648}
+
+do_execsql_test atan-int {
+  SELECT round(atan(0.2), 6);
+} {0.197396}
+
+do_execsql_test atan-string {
+  SELECT round(atan('0.75'), 6);
+} {0.643501}
+
+do_execsql_test atan-zero {
+  SELECT atan(0);
+} {0.0}
+
+do_execsql_test atan-badarg-1 {
+  SELECT atan('foo');
+} {0.0}
+
+do_execsql_test atan-null {
+  SELECT atan(NULL);
+} {{}}
+
+do_test atan-args-0 {
+  catchsql {
+    SELECT atan();
+  }
+} {1 {wrong number of arguments to function atan()}}
+
+do_test atan-args-2 {
+  catchsql {
+    SELECT atan(1, 2);
+  }
+} {1 {wrong number of arguments to function atan()}}
+
+# atan2()
+
+do_execsql_test atan2-float-float {
+  SELECT round(atan2(2.5, 3.7), 6);
+} {0.594214}
+
+do_execsql_test atan2-int-int {
+  SELECT round(atan2(2, 3), 6);
+} {0.588003}
+
+do_execsql_test atan2-float-int {
+  SELECT round(atan2(2.5, 3), 6);
+} {0.694738}
+
+do_execsql_test atan2-int-float {
+  SELECT round(atan2(2, 3.7), 6);
+} {0.495552}
+
+do_execsql_test atan2-badarg-1 {
+  SELECT atan2('foo', 2.5);
+} {0.0}
+
+do_execsql_test atan2-badarg-2 {
+  SELECT round(atan2(2.5, 'foo'), 6);
+} {1.570796}
+
+do_execsql_test atan2-string-string {
+  SELECT round(atan2('2.5', '-2'), 6);
+} {2.245537}
+
+do_execsql_test atan2-null-both {
+  SELECT atan2(NULL, NULL);
+} {{}}
+
+do_execsql_test atan2-null-x {
+  SELECT atan2(NULL, 3);
+} {{}}
+
+do_execsql_test atan2-null-y {
+  SELECT atan2(2, NULL);
+} {{}}
+
+do_test atan2-args-0 {
+  catchsql {
+    SELECT atan2();
+  }
+} {1 {wrong number of arguments to function atan2()}}
+
+do_test atan2-args-1 {
+  catchsql {
+    SELECT atan2(1);
+  }
+} {1 {wrong number of arguments to function atan2()}}
+
+do_test atan2-args-3 {
+  catchsql {
+    SELECT atan2(1, 2, 3);
+  }
+} {1 {wrong number of arguments to function atan2()}}
+
+# cosh()
+
+do_execsql_test cosh-float {
+  SELECT round(cosh(2.5), 6);
+} {6.132289}
+
+do_execsql_test cosh-int {
+  SELECT round(cosh(2), 6);
+} {3.762196}
+
+do_execsql_test cosh-string {
+  SELECT round(cosh('2.75'), 6);
+} {7.85328}
+
+do_execsql_test cosh-zero {
+  SELECT cosh(0);
+} {1.0}
+
+do_execsql_test cosh-badarg-1 {
+  SELECT cosh('foo');
+} {1.0}
+
+do_execsql_test cosh-null {
+  SELECT cosh(NULL);
+} {{}}
+
+do_test cosh-args-0 {
+  catchsql {
+    SELECT cosh();
+  }
+} {1 {wrong number of arguments to function cosh()}}
+
+do_test cosh-args-2 {
+  catchsql {
+    SELECT cosh(1, 2);
+  }
+} {1 {wrong number of arguments to function cosh()}}
+
+# sinh()
+
+do_execsql_test sinh-float {
+  SELECT round(sinh(2.5), 6);
+} {6.050204}
+
+do_execsql_test sinh-int {
+  SELECT round(sinh(2), 6);
+} {3.62686}
+
+do_execsql_test sinh-string {
+  SELECT round(sinh('2.75'), 6);
+} {7.789352}
+
+do_execsql_test sinh-zero {
+  SELECT sinh(0);
+} {0.0}
+
+do_execsql_test sinh-badarg-1 {
+  SELECT sinh('foo');
+} {0.0}
+
+do_execsql_test sinh-null {
+  SELECT sinh(NULL);
+} {{}}
+
+do_test sinh-args-0 {
+  catchsql {
+    SELECT sinh();
+  }
+} {1 {wrong number of arguments to function sinh()}}
+
+do_test sinh-args-2 {
+  catchsql {
+    SELECT sinh(1, 2);
+  }
+} {1 {wrong number of arguments to function sinh()}}
+
+# tanh()
+
+do_execsql_test tanh-float {
+  SELECT round(tanh(2.5), 6);
+} {0.986614}
+
+do_execsql_test tanh-int {
+  SELECT round(tanh(2), 6);
+} {0.964028}
+
+do_execsql_test tanh-string {
+  SELECT round(tanh('2.75'), 6);
+} {0.99186}
+
+do_execsql_test tanh-zero {
+  SELECT tanh(0);
+} {0.0}
+
+do_execsql_test tanh-badarg-1 {
+  SELECT tanh('foo');
+} {0.0}
+
+do_execsql_test tanh-null {
+  SELECT tanh(NULL);
+} {{}}
+
+do_test tanh-args-0 {
+  catchsql {
+    SELECT tanh();
+  }
+} {1 {wrong number of arguments to function tanh()}}
+
+do_test tanh-args-2 {
+  catchsql {
+    SELECT tanh(1, 2);
+  }
+} {1 {wrong number of arguments to function tanh()}}
+
+# exp()
+
+do_execsql_test exp-float {
+  SELECT round(exp(2.5), 6);
+} {12.182494}
+
+do_execsql_test exp-int {
+  SELECT round(exp(2), 6);
+} {7.389056}
+
+do_execsql_test exp-string {
+  SELECT round(exp('2.75'), 6);
+} {15.642632}
+
+do_execsql_test exp-zero {
+  SELECT exp(0);
+} {1.0}
+
+do_execsql_test exp-badarg-1 {
+  SELECT exp('foo');
+} {1.0}
+
+do_execsql_test exp-null {
+  SELECT exp(NULL);
+} {{}}
+
+do_test exp-args-0 {
+  catchsql {
+    SELECT exp();
+  }
+} {1 {wrong number of arguments to function exp()}}
+
+do_test exp-args-2 {
+  catchsql {
+    SELECT exp(1, 2);
+  }
+} {1 {wrong number of arguments to function exp()}}
+
+# log()
+
+do_execsql_test log-float {
+  SELECT round(log(2.5), 6);
+} {0.916291}
+
+do_execsql_test log-int {
+  SELECT round(log(2), 6);
+} {0.693147}
+
+do_execsql_test log-string {
+  SELECT round(log('2.75'), 6);
+} {1.011601}
+
+do_execsql_test log-zero {
+  SELECT log(0);
+} {-Inf}
+
+do_execsql_test log-badarg-1 {
+  SELECT log('foo');
+} {-Inf}
+
+do_execsql_test log-null {
+  SELECT log(NULL);
+} {{}}
+
+do_test log-args-0 {
+  catchsql {
+    SELECT log();
+  }
+} {1 {wrong number of arguments to function log()}}
+
+do_test log-args-2 {
+  catchsql {
+    SELECT log(1, 2);
+  }
+} {1 {wrong number of arguments to function log()}}
+
+# log10()
+
+do_execsql_test log10-float {
+  SELECT round(log10(2.5), 6);
+} {0.39794}
+
+do_execsql_test log10-int {
+  SELECT round(log10(2), 6);
+} {0.30103}
+
+do_execsql_test log10-string {
+  SELECT round(log10('2.75'), 6);
+} {0.439333}
+
+do_execsql_test log10-zero {
+  SELECT log10(0);
+} {-Inf}
+
+do_execsql_test log10-badarg-1 {
+  SELECT log10('foo');
+} {-Inf}
+
+do_execsql_test log10-null {
+  SELECT log10(NULL);
+} {{}}
+
+do_test log10-args-0 {
+  catchsql {
+    SELECT log10();
+  }
+} {1 {wrong number of arguments to function log10()}}
+
+do_test log10-args-2 {
+  catchsql {
+    SELECT log10(1, 2);
+  }
+} {1 {wrong number of arguments to function log10()}}
+
+# sqrt()
+
+do_execsql_test sqrt-float {
+  SELECT round(sqrt(2.5), 6);
+} {1.581139}
+
+do_execsql_test sqrt-int {
+  SELECT round(sqrt(2), 6);
+} {1.414214}
+
+do_execsql_test sqrt-string {
+  SELECT round(sqrt('2.75'), 6);
+} {1.658312}
+
+do_execsql_test sqrt-zero {
+  SELECT sqrt(0);
+} {0.0}
+
+do_execsql_test sqrt-badarg-1 {
+  SELECT sqrt('foo');
+} {0.0}
+
+do_execsql_test sqrt-null {
+  SELECT sqrt(NULL);
+} {{}}
+
+do_test sqrt-args-0 {
+  catchsql {
+    SELECT sqrt();
+  }
+} {1 {wrong number of arguments to function sqrt()}}
+
+do_test sqrt-args-2 {
+  catchsql {
+    SELECT sqrt(1, 2);
+  }
+} {1 {wrong number of arguments to function sqrt()}}
+
+# ceil()
+
+do_execsql_test ceil-float {
+  SELECT round(ceil(2.5), 6);
+} {3.0}
+
+do_execsql_test ceil-int {
+  SELECT round(ceil(2), 6);
+} {2.0}
+
+do_execsql_test ceil-string {
+  SELECT round(ceil('2.75'), 6);
+} {3.0}
+
+do_execsql_test ceil-zero {
+  SELECT ceil(0);
+} {0.0}
+
+do_execsql_test ceil-badarg-1 {
+  SELECT ceil('foo');
+} {0.0}
+
+do_execsql_test ceil-null {
+  SELECT ceil(NULL);
+} {{}}
+
+do_test ceil-args-0 {
+  catchsql {
+    SELECT ceil();
+  }
+} {1 {wrong number of arguments to function ceil()}}
+
+do_test ceil-args-2 {
+  catchsql {
+    SELECT ceil(1, 2);
+  }
+} {1 {wrong number of arguments to function ceil()}}
+
+# floor()
+
+do_execsql_test floor-float {
+  SELECT round(floor(2.5), 6);
+} {2.0}
+
+do_execsql_test floor-int {
+  SELECT round(floor(2), 6);
+} {2.0}
+
+do_execsql_test floor-string {
+  SELECT round(floor('2.75'), 6);
+} {2.0}
+
+do_execsql_test floor-zero {
+  SELECT floor(0);
+} {0.0}
+
+do_execsql_test floor-badarg-1 {
+  SELECT floor('foo');
+} {0.0}
+
+do_execsql_test floor-null {
+  SELECT floor(NULL);
+} {{}}
+
+do_test floor-args-0 {
+  catchsql {
+    SELECT floor();
+  }
+} {1 {wrong number of arguments to function floor()}}
+
+do_test floor-args-2 {
+  catchsql {
+    SELECT floor(1, 2);
+  }
+} {1 {wrong number of arguments to function floor()}}
+
+finish_test

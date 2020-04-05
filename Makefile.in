@@ -68,7 +68,9 @@ TCC += -DSQLITE_THREADSAFE=@SQLITE_THREADSAFE@
 
 # Any target libraries which libsqlite must be linked against
 #
-TLIBS = @LIBS@ $(LIBS)
+# sqlite3x: "-lm" is required for some compilers to make sure the math library
+# is linked.
+TLIBS = @LIBS@ $(LIBS) -lm
 
 # Flags controlling use of the in memory btree implementation
 #
@@ -236,6 +238,7 @@ SRC = \
   $(TOP)/src/loadext.c \
   $(TOP)/src/main.c \
   $(TOP)/src/malloc.c \
+  $(TOP)/src/math.c \
   $(TOP)/src/mem0.c \
   $(TOP)/src/mem1.c \
   $(TOP)/src/mem2.c \
@@ -482,6 +485,7 @@ TESTSRC2 = \
   $(TOP)/src/insert.c \
   $(TOP)/src/wal.c \
   $(TOP)/src/main.c \
+  $(TOP)/src/math.c \
   $(TOP)/src/mem5.c \
   $(TOP)/src/os.c \
   $(TOP)/src/os_unix.c \
@@ -882,6 +886,9 @@ main.lo:	$(TOP)/src/main.c $(HDR)
 
 malloc.lo:	$(TOP)/src/malloc.c $(HDR)
 	$(LTCOMPILE) $(TEMP_STORE) -c $(TOP)/src/malloc.c
+
+math.lo:	$(TOP)/src/math.c $(HDR)
+	$(LTCOMPILE) $(TEMP_STORE) -c $(TOP)/src/math.c
 
 mem0.lo:	$(TOP)/src/mem0.c $(HDR)
 	$(LTCOMPILE) $(TEMP_STORE) -c $(TOP)/src/mem0.c
@@ -1450,7 +1457,7 @@ clean:
 	rm -f showjournal$(TEXE) showstat4$(TEXE) showwal$(TEXE) speedtest1$(TEXE)
 	rm -f wordcount$(TEXE) changeset$(TEXE)
 	rm -f sqlite3.dll sqlite3.lib sqlite3.exp sqlite3.def
-	rm -f sqlite3.c
+	rm -f sqlite3.c sqlite3x.c
 	rm -f sqlite3rc.h
 	rm -f shell.c sqlite3ext.h
 	rm -f sqlite3_analyzer$(TEXE) sqlite3_analyzer.c

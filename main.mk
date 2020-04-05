@@ -113,6 +113,7 @@ SRC = \
   $(TOP)/src/loadext.c \
   $(TOP)/src/main.c \
   $(TOP)/src/malloc.c \
+  $(TOP)/src/math.c \
   $(TOP)/src/mem0.c \
   $(TOP)/src/mem1.c \
   $(TOP)/src/mem2.c \
@@ -401,6 +402,7 @@ TESTSRC2 = \
   $(TOP)/src/insert.c \
   $(TOP)/src/wal.c \
   $(TOP)/src/main.c \
+  $(TOP)/src/math.c \
   $(TOP)/src/mem5.c \
   $(TOP)/src/os.c \
   $(TOP)/src/os_unix.c \

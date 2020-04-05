@@ -51,3 +51,5 @@
 /sqlite3x
 /.fslckout
 /sqlite3x.c
+/gh-md-toc
+/test.db
