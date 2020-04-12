@@ -239,6 +239,9 @@ SRC = \
   $(TOP)/src/main.c \
   $(TOP)/src/malloc.c \
   $(TOP)/src/math.c \
+  $(TOP)/src/decimal.c \
+  $(TOP)/src/cutils.c \
+  $(TOP)/src/libbf.c \
   $(TOP)/src/mem0.c \
   $(TOP)/src/mem1.c \
   $(TOP)/src/mem2.c \
@@ -486,6 +489,9 @@ TESTSRC2 = \
   $(TOP)/src/wal.c \
   $(TOP)/src/main.c \
   $(TOP)/src/math.c \
+  $(TOP)/src/decimal.c \
+  $(TOP)/src/cutils.c \
+  $(TOP)/src/libbf.c \
   $(TOP)/src/mem5.c \
   $(TOP)/src/os.c \
   $(TOP)/src/os_unix.c \
@@ -889,6 +895,15 @@ malloc.lo:	$(TOP)/src/malloc.c $(HDR)
 
 math.lo:	$(TOP)/src/math.c $(HDR)
 	$(LTCOMPILE) $(TEMP_STORE) -c $(TOP)/src/math.c
+
+decimal.lo:	$(TOP)/src/decimal.c $(HDR)
+	$(LTCOMPILE) $(TEMP_STORE) -c $(TOP)/src/decimal.c
+
+libbf.lo:	$(TOP)/src/libbf.c $(HDR)
+	$(LTCOMPILE) $(TEMP_STORE) -c $(TOP)/src/libbf.c
+
+cutils.lo:	$(TOP)/src/cutils.c $(HDR)
+	$(LTCOMPILE) $(TEMP_STORE) -c $(TOP)/src/cutils.c
 
 mem0.lo:	$(TOP)/src/mem0.c $(HDR)
 	$(LTCOMPILE) $(TEMP_STORE) -c $(TOP)/src/mem0.c

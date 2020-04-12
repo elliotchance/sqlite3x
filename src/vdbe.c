@@ -20,6 +20,7 @@
 */
 #include "sqliteInt.h"
 #include "vdbeInt.h"
+#include "decimal.h"
 
 /*
 ** Invoke this macro on memory cells just prior to changing the
@@ -1652,6 +1653,15 @@ case OP_Remainder: {           /* same as TK_REM, in1, in2, out3 */
   type2 = numericType(pIn2);
   pOut = &aMem[pOp->p3];
   flags = pIn1->flags | pIn2->flags;
+
+  // Perform decimal math if both sides are strings. It's important to recognise
+  // that both of the operands must be a string, so we cannot use the "flags"
+  // variable above.
+  if( pIn1->flags & pIn2->flags & MEM_Str ) {
+    sqlite3xDecimalOpCode(pOp->opcode, pOut, pIn1, pIn2);
+    break;
+  }
+
   if( (type1 & type2 & MEM_Int)!=0 ){
     iA = pIn1->u.i;
     iB = pIn2->u.i;

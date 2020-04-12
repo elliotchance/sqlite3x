@@ -47,8 +47,122 @@ line or linked library.
 Features
 ========
 
-Added Functions
----------------
+Arbitrary Precision (Decimal) Arithmetic
+----------------------------------------
+
+Arbitrary precision arithmetic (sometimes called decimal math) is important when
+performing operations on exact values, where approximations and rounding errors
+from floating-point values are not permitted. One good example of this is
+calculations that involve money.
+
+sqlite3x handles arbitrary precision arithmetic automatically. Internally, the
+execution engine (also called VDBE) has been modified to offload operations
+between `TEXT` to the [LibBF library](https://bellard.org/libbf/) created by
+Fabrice Bellard.
+
+Here is an example of how sqlite3 and sqlite3x handle the same operation:
+
+```sqlite
+SELECT "12345678901234567890.123" + "234.5678901234567890234567890123456789";
+
+-- sqlite3 result: 1.23456789012346e+19
+-- sqlite3x result: 12345678901234568124.6908901234567890234567890123456789
+```
+
+### Important Notes
+
+1. Arbitrary precision arithmetic will only be used when all inputs are `TEXT`. If
+you mix types (`1.23 + "4.56"`, for example) the normal approximation will be
+used and an int or floating-point value will be returned.
+
+2. The [type affinity](https://www.sqlite.org/datatype3.html#type_affinity) of
+the column must be `TEXT`:
+
+`TEXT` affinity must have one of the following types (the size specified is
+ignored): `CHARACTER(20)`, `VARCHAR(255)`, `VARYING CHARACTER(255)`,
+`NCHAR(55)`, `NATIVE CHARACTER(70)`, `NVARCHAR(100)`, `TEXT`, `CLOB`.
+
+The following affinities will *not* use decimal arithmetic (notice that SQL
+`NUMERIC` and `DECIMAL` will not have a `TEXT` affinity, so they cannot be
+used):
+
+`INTEGER` affinity: `INT`, `INTEGER`, `TINYINT`, `SMALLINT`, `MEDIUMINT`,
+`BIGINT`, `UNSIGNED BIG INT`, `INT2`, `INT8`.
+
+`BLOB` affinity: `BLOB` or no data type specified.
+
+`REAL` affinity: `REAL`, `DOUBLE`, `DOUBLE PRECISION`, `FLOAT`.
+
+`NUMERIC` affinity: `NUMERIC`, `DECIMAL(10,5)`, `BOOLEAN`, `DATE`, `DATETIME`.
+
+3. Decimal values must be well formed (in the form of "###" or "###.###").
+Values that are not well formed may produce unexpected results and are not
+guaranteed to return an error.
+
+4. `NULL` rules still apply to decimal values. That is, a `NULL` value used in
+arithmetic will always return a `NULL` result.
+
+
+Decimal Functions
+-----------------
+
+### precision(X)
+
+`precision()` is only designed to work with text values that represents a well
+formed exact number. Attempting to use it with a non well formed value will
+produce unexpected results.
+
+The precision is the minimum number of digits (not including the decimal point,
+or negative sign) required to accurately represent the number. For example:
+
+```sql
+precision("0")         -- 1
+precision("0.0")       -- 1
+precision("123")       -- 3
+precision("-123")      -- 3
+precision("1230")      -- 4
+precision("01230")     -- 4
+precision("123.0")     -- 3
+precision("123.45")    -- 5
+precision("-123.45")   -- 5
+precision("0123.4500") -- 5
+```
+
+For any other argument type it will return `NULL`. Should you need to use
+`precision()` on a non-text value you must cast it first. However, keep in mind
+that floating-point values are intrinsically approximations so the result of
+`precision()` cannot always be trusted in those cases.
+
+## scale(X)
+
+`scale()` is only designed to work with text values that represents a well
+formed exact number. Attempting to use it with a non well formed value will
+produce unexpected results.
+
+The scale is the number of digits after the decimal point, excluding trailing
+zeros:
+
+```sql
+scale("0")         -- 0
+scale("0.0")       -- 0
+scale("123")       -- 0
+scale("-123")      -- 0
+scale("1230")      -- 0
+scale("01230")     -- 0
+scale("123.0")     -- 0
+scale("123.45")    -- 2
+scale("-123.45")   -- 2
+scale("0123.4500") -- 2
+```
+
+For any other argument type it will return `NULL`. Should you need to use
+`scale()` on a non-text value you must cast it first. However, keep in mind that
+floating-point values are intrinsically approximations so the result of
+`scale()` cannot always be trusted in those cases.
+
+
+Math Functions
+--------------
 
 On top of the [sqlite3 built-in functions](
 https://www.sqlite.org/lang_corefunc.html), sqlite3x adds:
@@ -75,7 +189,7 @@ atan(X) returns the arc-tangent of *X*. If *X* is `NULL`, then the result will
 be `NULL`.
 
 If *X* not numeric then it will be treated internally as `0.0`. This will
-produce a result of `0.0`.
+produce a result of `0.0`.~~~~
 
 ### atan2(Y,X)
 

@@ -355,6 +355,9 @@ foreach file {
    delete.c
    func.c
    math.c
+   decimal.c
+   cutils.c
+   libbf.c
    fkey.c
    insert.c
    legacy.c

@@ -2012,6 +2012,7 @@ void sqlite3RegisterBuiltinFunctions(void){
     INLINE_FUNC(coalesce,       -1, INLINEFUNC_coalesce, SQLITE_FUNC_COALESCE),
   };
   sqlite3xMathFunctions();
+  sqlite3xDecimalFunctions();
 #ifndef SQLITE_OMIT_ALTERTABLE
   sqlite3AlterFunctions();
 #endif

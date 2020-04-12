@@ -1,0 +1,224 @@
+set testdir [file dirname $argv0]
+source $testdir/tester.tcl
+
+# precision(X)
+
+do_execsql_test precision-null {
+  SELECT precision(NULL);
+} {{}}
+
+do_execsql_test precision-int {
+  SELECT precision(123);
+} {{}}
+
+do_execsql_test precision-float {
+  SELECT precision(123.0);
+} {{}}
+
+do_execsql_test precision-text1 {
+  SELECT precision("0");
+} {1}
+
+do_execsql_test precision-text2 {
+  SELECT precision("0.0");
+} {1}
+
+do_execsql_test precision-text3 {
+  SELECT precision("123");
+} {3}
+
+do_execsql_test precision-text4 {
+  SELECT precision("-123");
+} {3}
+
+do_execsql_test precision-text5 {
+  SELECT precision("1230");
+} {4}
+
+do_execsql_test precision-text6 {
+  SELECT precision("01230");
+} {4}
+
+do_execsql_test precision-text7 {
+  SELECT precision("123.0");
+} {3}
+
+do_execsql_test precision-text8 {
+  SELECT precision("-123.0");
+} {3}
+
+do_execsql_test precision-text9 {
+  SELECT precision("123.45");
+} {5}
+
+do_execsql_test precision-text10 {
+  SELECT precision("0123.4500");
+} {5}
+
+# scale(X)
+
+do_execsql_test scale-null {
+  SELECT scale(NULL);
+} {{}}
+
+do_execsql_test scale-int {
+  SELECT scale(123);
+} {{}}
+
+do_execsql_test scale-float {
+  SELECT scale(123.0);
+} {{}}
+
+do_execsql_test scale-text1 {
+  SELECT scale("0");
+} {0}
+
+do_execsql_test scale-text2 {
+  SELECT scale("0.0");
+} {0}
+
+do_execsql_test scale-text3 {
+  SELECT scale("123");
+} {0}
+
+do_execsql_test scale-text4 {
+  SELECT scale("-123");
+} {0}
+
+do_execsql_test scale-text5 {
+  SELECT scale("1230");
+} {0}
+
+do_execsql_test scale-text6 {
+  SELECT scale("01230");
+} {0}
+
+do_execsql_test scale-text7 {
+  SELECT scale("123.0");
+} {0}
+
+do_execsql_test scale-text8 {
+  SELECT scale("-123.0");
+} {0}
+
+do_execsql_test scale-text9 {
+  SELECT scale("123.45");
+} {2}
+
+do_execsql_test scale-text10 {
+  SELECT scale("0123.4500");
+} {2}
+
+# add (+)
+
+# It's important that the integer result ends with a 0 to verify that it's not
+# trimmed off like it would be after a floating-point operation.
+
+do_execsql_test add-ints {
+  SELECT "1230" + "450";
+} {1680}
+
+do_execsql_test add-ints-overflow {
+  SELECT "9830" + "450";
+} {10280}
+
+do_execsql_test add-ints-underflow {
+  SELECT "9830" + "-9000";
+} {830}
+
+do_execsql_test add-floats {
+  SELECT "193.4" + "45.06";
+} {238.46}
+
+do_execsql_test add-floats-overflow {
+  SELECT "993.4" + "45.06";
+} {1038.46}
+
+do_execsql_test add-floats-underflow {
+  SELECT "993.4" + "-945.06";
+} {48.34}
+
+do_execsql_test add-floats-trim {
+  SELECT "193.04" + "45.06";
+} {238.1}
+
+do_execsql_test add-floats-trim-overflow {
+  SELECT "993.04" + "45.06";
+} {1038.1}
+
+do_execsql_test add-floats-trim-underflow {
+  SELECT "993.14" + "-945.04";
+} {48.1}
+
+do_execsql_test add-big {
+  SELECT "12345678901234567890.123"
+    + "234.5678901234567890234567890123456789";
+} {12345678901234568124.6908901234567890234567890123456789}
+
+# subtract (-)
+
+do_execsql_test subtract-ints {
+  SELECT "1230" - "150";
+} {1080}
+
+do_execsql_test subtract-ints-overflow {
+  SELECT "9730" - "-450";
+} {10180}
+
+do_execsql_test subtract-ints-underflow {
+  SELECT "10230" - "450";
+} {9780}
+
+do_execsql_test subtract-floats {
+  SELECT "193.4" - "45.06";
+} {148.34}
+
+do_execsql_test subtract-floats-overflow {
+  SELECT "1093.4" - "-9145.06";
+} {10238.46}
+
+do_execsql_test subtract-floats-underflow {
+  SELECT "1093.4" - "145.06";
+} {948.34}
+
+do_execsql_test subtract-floats-trim {
+  SELECT "193.14" - "45.04";
+} {148.1}
+
+do_execsql_test subtract-floats-trim-overflow {
+  SELECT "1023.16" - "-9045.04";
+} {10068.2}
+
+do_execsql_test subtract-floats-trim-underflow {
+  SELECT "1023.16" - "45.06";
+} {978.1}
+
+do_execsql_test subtract-big {
+  SELECT "12345678901234567890.123"
+    - "234.5678901234567890234567890123456789";
+} {12345678901234567655.5551098765432109765432109876543211}
+
+# multiply (*)
+
+do_execsql_test multiply-ints-underflow {
+  SELECT "1230" * "150";
+} {184500}
+
+do_execsql_test multiply-ints-overflow {
+  SELECT "999" * "9999";
+} {9989001}
+
+do_execsql_test subtract-floats-underflow {
+  SELECT "1093.4" * "10";
+} {10934}
+
+do_execsql_test multiply-floats-overflow {
+  SELECT "193.4" * "45.06";
+} {8714.604}
+
+do_execsql_test multiply-big {
+  SELECT "12345678901234567890.123"
+    * "234.5678901234567890234567890123456789";
+} {2895899852004268860508.9618231875172810689371837987090395047}
+
+finish_test
